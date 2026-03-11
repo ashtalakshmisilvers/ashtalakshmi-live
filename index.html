@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sree Ashtalakshmi Silvers | Master Portal</title>
+    <style>
+        :root {
+            --brand-blue: #00AEEF;
+            --white: #ffffff;
+            --bg-light: #f4f7f9;
+            --up-green: #1b5e20;
+            --down-red: #b71c1c;
+            --wa-green: #25D366;
+            --text-dark: #333;
+        }
+
+        body { background-color: #333; margin: 0; padding: 0; display: flex; justify-content: center; font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
+        .app-shell { width: 100%; max-width: 480px; background-color: var(--bg-light); height: 100vh; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+
+        /* HEADER */
+        .app-header { background: var(--white); padding: 12px 15px; display: flex; align-items: center; border-bottom: 3px solid var(--brand-blue); z-index: 10; }
+        .logo-box { width: 45px; height: 45px; margin-right: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .logo-box img { width: 100%; height: auto; }
+        .brand-title { font-size: 0.95rem; font-weight: 800; color: var(--brand-blue); margin: 0; text-transform: uppercase; }
+        .slogan { font-size: 0.55rem; color: #888; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+        /* CONTENT */
+        .content { flex: 1; overflow-y: auto; padding-bottom: 85px; }
+        .page { display: none; padding: 10px; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* INT SUMMARY */
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 12px; }
+        .summary-box { background: #fff; border-radius: 10px; padding: 8px; text-align: center; border: 1px solid #eee; }
+        .s-label { font-size: 0.55rem; font-weight: bold; color: #777; display: block; }
+        .s-val { font-size: 0.8rem; font-weight: 800; color: var(--brand-blue); margin: 3px 0; display: block; }
+
+        /* TABLES */
+        .table-card { background: #fff; border-radius: 12px; overflow: hidden; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .rate-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .rate-table th { background-color: var(--brand-blue); color: white; padding: 10px 5px; text-transform: uppercase; font-size: 0.65rem; }
+        .rate-table td { padding: 14px 5px; border-bottom: 1px solid #f5f5f5; text-align: center; vertical-align: middle; }
+        .prod-name { text-align: left !important; padding-left: 12px !important; font-weight: 700; color: #444; font-size: 0.75rem; }
+        .sell-val { font-size: 1.1rem; font-weight: 900; transition: color 0.3s; }
+
+        /* MARKET WAIT MESSAGE */
+        #market-wait-msg { display: none; background: white; border-radius: 15px; padding: 40px 20px; text-align: center; margin-top: 20px; border: 2px dashed var(--brand-blue); }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: absolute; bottom: 0; width: 100%; max-width: 480px; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { flex: 1; text-align: center; color: #aaa; font-size: 0.65rem; font-weight: bold; text-decoration: none; cursor: pointer; }
+        .nav-item.active { color: var(--brand-blue); }
+        .nav-item.whatsapp { color: var(--wa-green); }
+        .nav-icon { font-size: 1.3rem; display: block; margin-bottom: 2px; }
+
+        /* ADMIN PANEL */
+        #admin-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .admin-group { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; }
+        .admin-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; margin-top: 10px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="logo-box" onclick="triggerAdmin()"><img src="logo.png" alt="Logo"></div>
+            <div class="brand-info">
+                <h1 class="brand-title">SREE ASHTALAKSHMI SILVERS</h1>
+                <div class="slogan">Pure Silver • Pure Gold • Pure Trust</div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div id="rates" class="page active">
+                <div class="summary-grid">
+                    <div class="summary-box"><span class="s-label">LBMA GOLD($)</span><span class="s-val" id="top-g">5,206.24</span></div>
+                    <div class="summary-box"><span class="s-label">LBMA SILVER($)</span><span class="s-val" id="top-s">88.25</span></div>
+                    <div class="summary-box"><span class="s-label">USD/INR(₹)</span><span class="s-val" id="top-inr">91.87</span></div>
+                </div>
+
+                <div id="market-wait-msg">
+                    <div style="color:var(--brand-blue); font-weight:800; font-size:1.1rem;">Notice: Please wait, market will be opening shortly.</div>
+                </div>
+
+                <div id="market-active-tables">
+                    <div class="table-card">
+                        <table class="rate-table">
+                            <thead><tr><th style="width: 45%;">SALEM LOCAL RATE</th><th style="width: 20%;">BUY</th><th style="width: 35%;">SELL</th></tr></thead>
+                            <tbody>
+                                <tr><td class="prod-name">GOLD BAR 24K (1G)</td><td>-</td><td class="sell-val" id="disp-gold">16,419</td></tr>
+                                <tr><td class="prod-name">SILVER 999 RTGS (1KG)</td><td>-</td><td class="sell-val" id="disp-silver">2,80,500</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-card">
+                        <table class="rate-table">
+                            <thead><tr><th style="width: 35%;">MCX MARKET (LIVE)</th><th style="width: 15%;">BUY</th><th style="width: 25%;">SELL</th><th style="width: 25%;">H / L</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="prod-name">GOLD MCX (10G)</td><td>-</td>
+                                    <td class="sell-val" id="disp-gmcx" style="font-size: 0.95rem;">1,63,300</td>
+                                    <td style="font-size: 0.5rem; color:#888;">H: 1,63,577<br>L: 1,60,299</td>
+                                </tr>
+                                <tr>
+                                    <td class="prod-name">SILVER MCX (1KG)</td><td>-</td>
+                                    <td class="sell-val" id="disp-smcx" style="font-size: 0.95rem;">2,77,000</td>
+                                    <td style="font-size: 0.5rem; color:#888;">H: 2,79,275<br>L: 2,71,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="bank" class="page">
+                <div class="table-card" style="padding:20px;">
+                    <h3 style="color:var(--brand-blue); margin-top:0;">BANK DETAILS</h3>
+                    <div style="font-size:0.85rem; line-height:2.2;">A/C Holder: SREE ASHTA LAKSHMI SILVERS<br>A/C: 50200088329737<br>Bank: HDFC BANK | IFSC: HDFC0003673</div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="tel:7092333623" class="nav-item"><span class="nav-icon">📞</span>Call</a>
+            <a id="wa-link" href="https://wa.me/917092333623?text=Hi,%20I%20want%20to%20book%20Gold%20at%20the%20current%20rate." target="_blank" class="nav-item whatsapp"><span class="nav-icon">💬</span>WhatsApp</a>
+            <div class="nav-item active" onclick="nav('rates', this)"><span class="nav-icon">📊</span>Rates</div>
+            <div class="nav-item" onclick="nav('bank', this)"><span class="nav-icon">🏦</span>Bank</div>
+        </nav>
+
+        <div id="admin-overlay">
+            <h2 style="color:var(--brand-blue);">Admin Control</h2>
+            <div class="admin-group">
+                <div style="display:flex; justify-content:space-between;"><b>GOLD ON/OFF</b> <input type="checkbox" id="on-gold" checked></div>
+                <input type="number" id="prof-gold" class="admin-input" value="89">
+            </div>
+            <div class="admin-group">
+                <div style="display:flex; justify-content:space-between;"><b>SILVER ON/OFF</b> <input type="checkbox" id="on-silver" checked></div>
+                <input type="number" id="prof-silver" class="admin-input" value="3500">
+            </div>
+            <button onclick="document.getElementById('admin-overlay').style.display='none'" style="width:100%; padding:15px; background:var(--brand-blue); color:white; border:none; border-radius:10px; font-weight:bold;">SAVE & LOGOUT</button>
+        </div>
+    </div>
+
+    <script>
+        function nav(pId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pId).classList.add('active'); el.classList.add('active');
+        }
+
+        let taps = 0;
+        function triggerAdmin() { taps++; if(taps >= 5) { if(prompt("Password:") === "1234") document.getElementById('admin-overlay').style.display='block'; taps=0; } }
+
+        let mcxG = 163300, mcxS = 277000, lastG = 0;
+
+        setInterval(() => {
+            const now = new Date();
+            const time = (now.getHours() * 100) + now.getMinutes();
+            const open = time >= 900 && time <= 2330;
+
+            if (open) {
+                document.getElementById('market-active-tables').style.display = 'block';
+                document.getElementById('market-wait-msg').style.display = 'none';
+
+                let tick = (Math.random() * 0.4 - 0.2); 
+                mcxG += (tick * 25); mcxS += (tick * 50);
+                
+                document.getElementById('disp-gmcx').innerText = Math.floor(mcxG).toLocaleString('en-IN');
+                document.getElementById('disp-smcx').innerText = Math.floor(mcxS).toLocaleString('en-IN');
+
+                let pG = parseFloat(document.getElementById('prof-gold').value) || 0;
+                let gEl = document.getElementById('disp-gold');
+                let sEl = document.getElementById('disp-silver');
+
+                if(document.getElementById('on-gold').checked) {
+                    let finalG = (mcxG / 10) + pG;
+                    let rateText = Math.floor(finalG).toLocaleString('en-IN');
+                    gEl.innerText = rateText;
+                    gEl.style.color = finalG > lastG ? "var(--up-green)" : "var(--down-red)";
+                    lastG = finalG;
+                    
+                    document.getElementById('wa-link').href = "https://wa.me/917092333623?text=Hi%20Sree%20Ashtalakshmi%20Silvers,%20I%20want%20to%20book%20Gold%20at%20the%20current%20rate%20of%20Rs.%20" + rateText;
+                } else { gEl.innerText = "-"; }
+
+                if(document.getElementById('on-silver').checked) {
+                    sEl.innerText = Math.floor(mcxS + (parseFloat(document.getElementById('prof-silver').value) || 0)).toLocaleString('en-IN');
+                } else { sEl.innerText = "-"; }
+
+                setTimeout(() => { if(gEl.innerText !== "-") gEl.style.color = "var(--text-dark)"; }, 400);
+            } else {
+                document.getElementById('market-active-tables').style.display = 'none';
+                document.getElementById('market-wait-msg').style.display = 'block';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
